@@ -1,0 +1,23 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+<h2>Welcome to Pollz</h2>
+<p>Creating a poll is as easy as 1, 2, 3</p>
+
+<ol>
+    <li>Add a question to your poll</li>
+    <li>Add as many options as you would like</li>
+    <li>Share the poll with friends with the provided link</li>
+</ol>
+
+<p>
+    {% if user %}
+    <a href = '/create'>Create a Poll</a>
+    {% else %}
+    <a href = '/register'>Register to Create a Poll</a>
+    {% endif %}
+    <a href = '/view'>View Polls</a>
+</p>
+
+
+{% endblock %}

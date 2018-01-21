@@ -1,0 +1,18 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+<h2>Log In</h2>
+
+{% with messages = get_flashed_messages() %}
+
+<strong>{{ messages[0]|safe }}</strong>
+
+{% endwith %}
+
+<form action = '/login' method = 'POST'>
+    <input requried type = 'email' name = 'email' placeholder = 'Email'><br>
+    <input required type = 'password' name = 'password' placeholder = 'Password'><br>
+    <input type = 'submit' value = 'Log In'>
+</form>
+
+{% endblock %}

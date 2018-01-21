@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-112815729-1"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'UA-112815729-1');
+        </script>
+        
+        <title>Pollz</title>
+        
+        <link rel = 'stylesheet' type = 'text/css' href = 'static/main.css' >
+        <!-- Link CSS here -->
+    </head>
+    <body>
+        <header>
+            <h1>Pollz</h1>
+            <ul>
+                <li><a href = 'view'>View Polls</a></li>
+                <li><a href = '/create'>Create a Poll</a></li>
+                
+                {% if user %}
+                <li><a href = '/logout'>Log Out</a></li>
+                {% else %}
+                <li><a href = '/login'>Log In</a></li>
+                <li><a href = '/register'>Register Now</a></li>
+                {% endif %}
+            </ul>
+        </header>
+        
+        {% block body %}
+        
+        {% endblock %}
+        
+        <footer>
+            Pollz &copy; 2018 Colin Siles
+        </footer>
+    </body>
+</html>
