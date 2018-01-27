@@ -1,0 +1,11 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+
+{% for poll in polls %}
+    {{ poll[0] }}<br>
+    {{ poll[1] }}<br>
+    {{ poll[2] }}<br>
+{% endfor %}
+
+{% endblock %}

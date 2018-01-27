@@ -12,10 +12,12 @@
 
 <form action = '/register' method = 'POST'>
     <input requried type = 'email' name = 'email' placeholder = 'Email'><br>
-    <input required type = 'password' name = 'password' placeholder = 'Password'><br>
+    <input required type = 'password' name = 'password' placeholder = 'Password' id = 'password'><br>
     <input type = 'checkbox' name = 'show' id = 'show'>
     <label for = 'show'>Show Password</label><br>
     <input type = 'submit' value = 'Register'>
 </form>
+
+<script src = 'static/register.js' type = 'text/javascript'></script>
 
 {% endblock %}

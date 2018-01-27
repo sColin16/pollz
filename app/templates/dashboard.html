@@ -1,0 +1,14 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+<h2>Dashboard</h2>
+
+{% with messages = get_flashed_messages() %}
+
+<strong>{{ messages[0]|safe }}</strong>
+
+{% endwith %}
+
+{{ user }}
+
+{% endblock %}

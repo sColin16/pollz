@@ -1,0 +1,10 @@
+[MESSAGES CONTROL]
+#disable=W
+
+[TYPECHECK]
+
+ignored-modules=flask_sqlalchemy,flask
+generated-members=db.query, db.session, app
+
+[MASTER]
+

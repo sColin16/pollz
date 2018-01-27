@@ -1,0 +1,20 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+
+<h2>Register for Pollz</h2>
+
+{% with messages = get_flashed_messages() %}
+
+<strong>{{ messages[0]|safe }}</strong>
+
+{% endwith %}
+
+<form action = '/create' method = 'POST'>
+    <input requried type = 'text' name = 'title' placeholder = 'Poll Title'><br>
+    <input required type = 'text' name = 'optionA' placeholder = 'First Choice'><br>
+    <input required type = 'text' name = 'optionB' placeholder = 'Second Choice'>
+    <input type = 'submit' value = 'Create Poll'>
+</form>
+
+{% endblock %}
