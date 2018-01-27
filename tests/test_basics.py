@@ -2,8 +2,8 @@
 # polls/users must add them back, or do something else
 
 import unittest
-from mock import MagicMock, patch
-from context import app, db, Users, Polls, Responses, sha256_crypt  # pylint:disable=W0403
+from mock import MagicMock, patch  # pylint:disable=E0401
+from context import app, db, Users, Polls, Responses, sha256_crypt  # pylint:disable=E0611,C0413,W0403
 
 
 TEST_DB = 'sqlite:///:memory:'

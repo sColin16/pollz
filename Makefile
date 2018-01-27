@@ -1,6 +1,5 @@
 init:
 	pip install -r requirements.txt
-	export DATABASE_URL="sqlite:///dev.db"
 	python app/setupdb.py
 
 run:
