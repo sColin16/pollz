@@ -1,0 +1,8 @@
+[run]
+omit=*/venv/*,*/virtualenv/*,tests/*
+
+[report]
+omit=*/venv/*,*/virtualenv/*,tests/*
+
+[html]
+#omit=*/venv/*,*/virtualenv/*,tests/*

@@ -11,8 +11,8 @@ run-prod:
 
 test:
 	coverage run tests/test_basics.py 
-	coverage report --omit=venv/*,tests/*
-	coverage html --omit=venv/*,tests/*
+	coverage report
+	coverage html
 
 lint-basic:
 	pycodestyle app tests
