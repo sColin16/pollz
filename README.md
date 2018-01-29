@@ -34,6 +34,8 @@ and make sure you see labels that say both `origin` and `upstream`
 
 **Congrats, you've downloaded the code!** :tada:
 
+*All of the following instructions assume you are within the root of repository directory*
+
 ### Prerequisites
 
 For the dev configuration, sqlite is used. If not already installed install it with
@@ -42,68 +44,86 @@ sudo apt-get install sqlite3
 ```
 or a similar command
 
+If you plan to use the dev instance within a virtualenv (which is recomended):
+```
+pip3 install virtualenv
+```
+
 ### Installing
+1. Create a virtualenv
+```
+pyhton3 -m virtualenv venv
+source venv/bin/activate
+```
 
-Many commands are abstracted into the Makefile, for easier typing
-
-Install the python packages:
+2. Install the python packages:
 ```
 make init
 ```
 
-Run the dev server:
+3. Run the dev server:
 ```
 make run
 ```
 
-And head to [localhost:5000] in your browser to ineract with the dev server.
+4. Head to [localhost:5000](localhost:5000) in your browser to ineract with the dev server.
 
 **If everything seems to have worked, you're ready to develop** :tada:
 
+## Contributing
+Coming Soon...
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
+
 ## Running the tests
 
-Explain how to run the automated tests for this system
-Coming soon...
-
-### Break down into end to end tests
-
-Explain what these tests test and why
-Coming soon...
-
+**To run the test suite**
 ```
-Give an example
+make test
 ```
+This command will run the unit tests, and generate a coverage report both in the command line, and as an html folder, called htmlcov. If you're interested in viewing the html coverage report open htmlcov/index.html.
+These tests must pass in order for the Travis CI build to succeed
 
 ### And coding style tests
 
-Explain what these tests test and why
-Coming soon...
+**To run basic linting**
 ```
-Give an example
+make lint
 ```
+This command will use the `pycodestyle` tool to test stylistic elements of the app code, and the test code.
+This linting must pass (i.e. not show any error messages) for the Travis CI build to succeed
+
+**To run thorough linting**
+```
+make lint advanced
+```
+In addition to running basic linting, this command will use `pylint` to perform a thorough linting of the code.
+This linting is not required to pass the Travis CI check (since it can discourage development - especially in early stages). However, it is recomended that some effort is put into minimizing the errors from this lint.
 
 ## Deployment
+The production version of pollz is run on the Heroku Cloud. You can deploy your copy to Heroku like any other app (using postgres), with a few basic modifications.
 
-Add additional notes about how to deploy this on a live system
-Coming soon...
+run `make get-key` to get a randomly generated secret key for production
+
+Within the app dashboard, click "Settings" and "Reveal Config Vars"
+
+Add the following variables for the app to function:
+
+```
+APP_MODE prod
+SECRET_KEY <result of 'make get-key'>
+```
+
+A full tutorial for deploying on Heroku is coming soon
 
 ## Built With
-Coming soon...
+* [Flask](http://flask.pocoo.org/) - The web development framework
 
-## Contributing
+## Contributors
 
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
-Coming Soon...
+* **Colin Siles**
 
-## Versioning
-
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
-
-## Authors
-
-* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+Any contributions to the project, whether code or a bug report will get your name added to the list!
+See also the list of [contributors](https://github.com/sColin16/pollz/contributors) who participated in this project.
 
 ## License
 
