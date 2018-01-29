@@ -2,6 +2,7 @@
 # Pollz
 
 ![Build Passing](https://travis-ci.org/sColin16/pollz.svg?branch=master)
+[![codecov](https://codecov.io/gh/sColin16/pollz/branch/master/graph/badge.svg)](https://codecov.io/gh/sColin16/pollz)
 
 Pollz is an open source survey and polling web application, built using Flask. The goal is to host fun and simple polls that are effortless to create.
 
