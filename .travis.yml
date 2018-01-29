@@ -1,8 +1,6 @@
 language: python
 python:
-    - "2.7"
-env:
-    - DATABASE_URL="sqlite:///dev.db"
+    - "3.6"
 install:
     - make init
 script:

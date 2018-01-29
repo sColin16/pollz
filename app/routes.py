@@ -1,64 +1,8 @@
-"""This file runs the Flask server for the Pollz Application."""
-
-import os
-from flask import flash, Flask, redirect, render_template, request, session
-from flask_sqlalchemy import SQLAlchemy
+from flask import redirect, flash, request, session
 from passlib.hash import sha256_crypt
-
-DB_URL = os.environ.get("DATABASE_URL", 'sqlite:///dev.db')
-
-app = Flask(__name__)  # pylint: disable=C0103
-
-app.config['SQLALCHEMY_DATABASE_URI'] = DB_URL
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.secret_key = 'D\xaec\xb7\x85\x01\x0e\x8c\x05\x94\xd1\
-                  \xc83\x92Z\xd7\xfe\x04\x11\xe3[\x91\xf7\xe4'
-
-db = SQLAlchemy(app)  # pylint: disable=C0103
-
-
-def login_user(email):
-    """Adds a user's email to their session to track that
-    they have logged into the application."""
-
-    session['user'] = email
-
-
-def render_with_user(template, **kwargs):
-    """Wrapper for flask's render_template function, that
-    also passes the user's email (if they logged in) to the
-    templating function."""
-
-    return render_template(template, user=session.get('user'), **kwargs)
-
-
-class Users(db.Model):  # pylint: disable-msg=R0903
-    """SQLAlchemy table scheme that stores the users. Currently stores
-    their email, and a hashed version of their password"""
-
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.Text, nullable=False)
-    password = db.Column(db.Text, nullable=False)
-
-
-class Polls(db.Model):  # pylint: disable-msg=R0903
-    """SQLAlchemy table scheme that stores the polls. Polls are not
-    currently connected to a user, and only stores a tite and a link
-    to the table that stores responses."""
-
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.Text, nullable=False)
-    responses = db.relationship('Responses')
-
-
-class Responses(db.Model):  # pylint: disable-msg=R0903
-    """SQLAlchemy table scheme that stores all the responses to
-    all the polls. It stores the text assocated with the option and
-    the id of the poll that it is a response for."""
-
-    id = db.Column(db.Integer, primary_key=True)
-    text = db.Column(db.Text, nullable=False)
-    poll_id = db.Column(db.Integer, db.ForeignKey(Polls.id), nullable=False)
+from app import app
+from app.helpers import *
+from app.models import *
 
 
 @app.route('/index')
@@ -183,8 +127,3 @@ def create():
         return redirect('/dashboard')
 
     return render_with_user('create.html')
-
-
-if __name__ == '__main__':
-    PORT = int(os.environ.get("PORT", 5000))
-    app.run(debug=True, host='0.0.0.0', port=PORT)

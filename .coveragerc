@@ -1,8 +1,6 @@
 [run]
-omit=*/venv/*,*/virtualenv/*,tests/*
+omit=*/venv/*,*/virtualenv/*,tests/*,config.py
 
 [report]
-omit=*/venv/*,*/virtualenv/*,tests/*
-
-[html]
 #omit=*/venv/*,*/virtualenv/*,tests/*
+

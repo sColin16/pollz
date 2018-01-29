@@ -1,12 +1,17 @@
 # TODO: prepopulate db with some users and polls, clear
 # polls/users must add them back, or do something else
 
+import os
+import sys
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+os.environ['APP_MODE'] = 'test'
+
 import unittest
-from mock import MagicMock, patch  # pylint:disable=E0401
-from context import app, db, Users, Polls, Responses, sha256_crypt  # pylint:disable=E0611,C0413,W0403
-
-
-TEST_DB = 'sqlite:///:memory:'
+from unittest.mock import MagicMock, patch
+from app import app, db, routes
+from app.models import Users, Polls, Responses
+from passlib.hash import sha256_crypt
 
 
 def clear_users():
@@ -25,12 +30,10 @@ class BasicTests(unittest.TestCase):
         super(BasicTests, self).__init__(*args, **kwargs)
         self.email = 'test@test.com'
         self.password = 'mypassword'
-        self.app = app.test_client()
+        self.client = app.test_client()
 
         sha256_crypt.encrypt = MagicMock(side_effect=lambda password: password)
         sha256_crypt.verify = MagicMock(side_effect=lambda password, hash: password == hash)
-        app.config['SQLALCHEMY_DATABASE_URI'] = TEST_DB
-        app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     def setUp(self):
         db.create_all()
@@ -44,7 +47,7 @@ class BasicTests(unittest.TestCase):
         if password is None:
             password = self.password
 
-        return self.app.post(
+        return self.client.post(
             '/register',
             data=dict(email=email, password=password),
             follow_redirects=True
@@ -56,8 +59,8 @@ class BasicTests(unittest.TestCase):
         if password is None:
             password = self.password
 
-        with patch('app.login_user'):
-            return self.app.post(
+        with patch('app.helpers.login_user'):
+            return self.client.post(
                 '/register',
                 data=dict(email=email, password=password),
                 follow_redirects=True
@@ -69,20 +72,20 @@ class BasicTests(unittest.TestCase):
         if password is None:
             password = self.password
 
-        return self.app.post(
+        return self.client.post(
             '/login',
             data=dict(email=email, password=password),
             follow_redirects=True
         )
 
     def logout(self):
-        return self.app.get(
+        return self.client.get(
             '/logout',
             follow_redirects=True
         )
 
     def create_poll(self, title, options):
-        return self.app.post(
+        return self.client.post(
             '/create',
             data=dict(title=title, optionA=options[0],
                       optionB=options[1]),
@@ -90,7 +93,7 @@ class BasicTests(unittest.TestCase):
         )
 
     def test_index_up(self):
-        response = self.app.get('/')
+        response = self.client.get('/')
         self.assertEqual(response.status_code, 200)
 
     def test_valid_registration(self):
@@ -102,25 +105,26 @@ class BasicTests(unittest.TestCase):
     def test_invalid_registration(self):
         clear_users()
         response = self.register_only()
+        self.logout()
         response = self.register_only()
-        self.assertIn('That email has already been used to register',
+        self.assertIn(b'That email has already been used to register',
                       response.data)
 
     def test_valid_login(self):
         self.register_only()
         response = self.login()
         self.assertEqual(response.status_code, 200)
-        self.assertIn('Dashboard', response.data)
+        self.assertIn(b'Dashboard', response.data)
 
     def test_invalid_login_email(self):
         self.register_only()
         response = self.login('bademail@test.com', self.password)
-        self.assertIn('Incorrect email or password', response.data)
+        self.assertIn(b'Incorrect email or password', response.data)
 
     def test_invalid_login_password(self):
         self.register_only()
         response = self.login(self.email, 'badpassword')
-        self.assertIn('Incorrect email or password', response.data)
+        self.assertIn(b'Incorrect email or password', response.data)
 
     def test_valid_logout(self):
         self.register_login()
@@ -135,15 +139,15 @@ class BasicTests(unittest.TestCase):
         clear_polls()
         self.register_login()
         response = self.create_poll('Test poll', ['Option A', 'Option B'])
-        self.assertIn("Poll created", response.data)
+        self.assertIn(b"Poll created", response.data)
 
     def test_view_poll(self):
         self.register_login()
         self.create_poll('Test poll', ['Option A', 'Option B'])
-        response = self.app.get('/view')
-        self.assertIn("Test poll", response.data)
-        self.assertIn("Option A", response.data)
-        self.assertIn("Option B", response.data)
+        response = self.client.get('/view')
+        self.assertIn(b"Test poll", response.data)
+        self.assertIn(b"Option A", response.data)
+        self.assertIn(b"Option B", response.data)
 
     def test_login_validated(self):
         # Test that a valid login is required to

@@ -1,16 +1,17 @@
 init:
-	pip install -r requirements.txt
-	python app/setupdb.py
+	pip3 install -r requirements.txt
+
+get-key:
+	cat /dev/urandom | tr -dc 'a-zA-Z0-9~!@#$%^&*_-' | head -c 50; echo
 
 run:
-	python app/app.py
+	export FLASK_APP=pollz.py; python3 -m flask run
 
 run-prod:
-	python app/setupdb.py
-	python app/app.py
+	export FLASK_APP=pollz.py; python3 -m flask run -h '0.0.0.0' -p $(PORT)
 
 test:
-	coverage run tests/test_basics.py 
+	coverage run tests/test_*.py 
 	coverage report
 	coverage html
 
