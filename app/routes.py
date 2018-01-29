@@ -1,8 +1,11 @@
+"""File that stores all of the pollz app's routes, or adresses that can be
+visited, as defined by the app.route decorators."""
+
 from flask import redirect, flash, request, session
 from passlib.hash import sha256_crypt
-from app import app
-from app.helpers import *
-from app.models import *
+from app import app, db
+from app.helpers import login_user, render_with_user
+from app.models import Users, Polls, Responses
 
 
 @app.route('/index')
@@ -106,6 +109,7 @@ def create():
     and handles the response when the form is submitted"""
 
     if 'user' not in session:
+        flash('You must login before you can create a poll')
         return redirect('/login')
 
     elif request.method == 'POST':

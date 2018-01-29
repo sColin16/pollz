@@ -1,3 +1,7 @@
+"""Functions that are called multiple times, or require mocking
+during unittesting (such as login_user)"""
+
+
 from flask import session, render_template
 
 

@@ -1,3 +1,7 @@
+"""Stores SQLAlchemy schemas for each database table used.
+Seperate tables that currently exist are Users, Polls, and Responses"""
+
+
 from app import db
 
 
