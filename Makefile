@@ -4,6 +4,10 @@ init:
 get-key:
 	cat /dev/urandom | tr -dc 'a-zA-Z0-9~!@#$%^&*_-' | head -c 50; echo
 
+clean-pyc:
+	find . -name '*.pyc'
+	find . -name '*.pyc' -delete
+
 run:
 	export FLASK_APP=pollz.py; python3 -m flask run
 
@@ -15,7 +19,7 @@ test:
 	coverage report
 	coverage html
 
-lint-basic:
+lint:
 	pycodestyle app tests
 	
 lint-advanced:
