@@ -5,7 +5,10 @@
 
 Pollz is an open source survey and polling web application, built using Flask. The goal is to host fun and simple polls that are effortless to create.
 
-## Getting Started
+## Getting started
+Interested in making modifications, or playing with the app? Follow these instructions:
+
+### Getting the code
 
 **Create your local fork**
 1. Click the "Fork" button to create your own copy of the repository
@@ -76,14 +79,14 @@ Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduc
 
 ## Running the tests
 
-**To run the test suite**
+### To run the test suite
 ```
 make test
 ```
 This command will run the unit tests, and generate a coverage report both in the command line, and as an html folder, called htmlcov. If you're interested in viewing the html coverage report open htmlcov/index.html.
 These tests must pass in order for the Travis CI build to succeed
 
-### And coding style tests
+### To run the linters
 
 **To run basic linting**
 ```
