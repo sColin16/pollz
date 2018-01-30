@@ -20,8 +20,8 @@ test:
 	coverage html
 
 lint:
-	pycodestyle app tests
+	pycodestyle app tests config.py pollz.py
 	
 lint-advanced:
-	pycodestyle app tests
-	pylint app tests
+	pycodestyle app tests config.py pollz.py
+	pylint app tests config.py pollz.py
