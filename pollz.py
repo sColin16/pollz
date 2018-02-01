@@ -4,6 +4,7 @@ of make run (for running the dev server), and flask shell
 
 from app import app, db, routes  # pylint:disable=unused-import
 from app.models import Users, Polls, Responses
+db.create_all()
 
 
 @app.shell_context_processor
