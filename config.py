@@ -18,7 +18,8 @@ class Config(object):  # pylint:disable=too-few-public-methods
 class DevConfig(Config):  # pylint:disable=too-few-public-methods
     """Dev configuration for general development"""
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASEDIR, 'dev.db')
+    SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://localhost/pollz'
+    # SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASEDIR, 'dev.db')
     SECRET_KEY = 'development key'
 
 
