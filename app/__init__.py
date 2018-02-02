@@ -17,4 +17,4 @@ app.config.from_object(CONFIG_OPTIONS.get(APP_MODE))
 db = SQLAlchemy(app)  # pylint:disable=invalid-name
 db.create_all()
 
-migrate = Migrate(app, db)
+migrate = Migrate(app, db)  # pylint:disable=invalid-name
