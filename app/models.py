@@ -32,3 +32,4 @@ class Responses(db.Model):  # pylint: disable-msg=R0903
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.Text, nullable=False)
     poll_id = db.Column(db.Integer, db.ForeignKey(Polls.id), nullable=False)
+    votes = db.Column(db.Integer, nullable=False, default=0)

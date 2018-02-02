@@ -4,6 +4,7 @@ variable APP_MODE, or default to the DevConfig."""
 
 
 import os
+BASEDIR = os.path.abspath(os.path.dirname(__file__) + '/app')
 
 
 class Config(object):  # pylint:disable=too-few-public-methods
@@ -17,7 +18,7 @@ class Config(object):  # pylint:disable=too-few-public-methods
 class DevConfig(Config):  # pylint:disable=too-few-public-methods
     """Dev configuration for general development"""
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///dev.db'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASEDIR, 'dev.db')
     SECRET_KEY = 'development key'
 
 
