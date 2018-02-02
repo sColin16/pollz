@@ -9,10 +9,11 @@ clean-pyc:
 	find . -name '*.pyc' -delete
 
 run:
-	export FLASK_APP=pollz.py; python3 -m flask run
+	flask run
 
 run-prod:
-	export FLASK_APP=pollz.py; python3 -m flask run -h '0.0.0.0' -p $(PORT)
+	flask db upgrade
+	flask run -h '0.0.0.0' -p $(PORT)
 
 test:
 	coverage run tests/test_*.py 
