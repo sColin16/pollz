@@ -12,7 +12,6 @@ run:
 	flask run
 
 run-prod:
-	flask db upgrade
 	flask run -h '0.0.0.0' -p $(PORT)
 
 test:
