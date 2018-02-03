@@ -1,0 +1,29 @@
+{
+  "name": "pollz",
+  "scripts": {
+  },
+  "env": {
+    "APP_MODE": {
+      "required": true
+    },
+    "FLASK_APP": {
+      "required": true
+    },
+    "FLASK_SECRET_KEY": {
+      "generator": "secret"
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1
+    }
+  },
+  "addons": [
+    "heroku-postgresql"
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/python"
+    }
+  ]
+}
