@@ -12,9 +12,11 @@
 
 <form action = '/create' method = 'POST'>
     <input requried type = 'text' name = 'title' placeholder = 'Poll Title'><br>
-    <input required type = 'text' name = 'optionA' placeholder = 'First Choice'><br>
-    <input required type = 'text' name = 'optionB' placeholder = 'Second Choice'>
+    <input required type = 'text' name = 'options[]' placeholder = 'First Choice'><br>
+    <input required type = 'text' name = 'options[]' placeholder = 'Second Choice'>
     <input type = 'submit' value = 'Create Poll'>
 </form>
+
+<!-- to send array, use name=options[] -->
 
 {% endblock %}

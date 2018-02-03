@@ -4,8 +4,8 @@ visited, as defined by the app.route decorators."""
 from flask import redirect, flash, request, session
 from passlib.hash import sha256_crypt
 from app import app, db
-from app.helpers import login_user, render_with_user
-from app.models import Users, Polls, Responses
+from app.helpers import login_user, render_with_user, add_poll, json_response
+from app.models import Users, Polls, Options
 
 
 @app.route('/index')
@@ -28,7 +28,7 @@ def register():
         email = request.form.get('email')
         password = request.form.get('password')
 
-        if Users.query.filter_by(email=email).count():
+        if Users.query.filter(Users.email == email).count():
             flash("That email has already been used to register. \
                   You can <a href = '/login'>login here</a>")
             return render_with_user('register.html')
@@ -57,7 +57,7 @@ def login():
         email = request.form.get('email')
         password = request.form.get('password')
 
-        user = Users.query.filter_by(email=email).first()
+        user = Users.query.filter(Users.email == email).first()
 
         if not user or not sha256_crypt.verify(password, user.password):
             flash("Incorrect email or password")
@@ -98,8 +98,9 @@ def view():
     """View path that allows for rudimentary viewing of polls. Future implementations
     will allow users to brwose polls and vote on them."""
 
-    polls = [[poll.title, poll.responses[0].text, poll.responses[1].text]
-             for poll in Polls.query.join(Responses).all()]
+    polls = [{'title': poll.title, 'id': poll.id, 'options': enumerate(poll.options)}
+             for poll in Polls.query.join(Options).order_by(Polls.id).all()]
+
     return render_with_user('view.html', polls=polls)
 
 
@@ -114,20 +115,46 @@ def create():
 
     elif request.method == 'POST':
         title = request.form.get('title')
-        option_a = request.form.get('optionA')
-        option_b = request.form.get('optionB')
+        options = request.form.getlist('options[]')
 
-        new_poll = Polls(title=title)
-        db.session.add(new_poll)
-        db.session.flush()
-
-        option_a_row = Responses(text=option_a, poll_id=new_poll.id)
-        option_b_row = Responses(text=option_b, poll_id=new_poll.id)
-
-        db.session.add_all([option_a_row, option_b_row])
+        add_poll(title, options)
         db.session.commit()
 
         flash('Poll created')
         return redirect('/dashboard')
 
     return render_with_user('create.html')
+
+
+@app.route('/vote')
+def vote():
+    """Route that is used to submit votes to the database.
+    GET is used to submit requests, to either add a vote
+    to the database, or switch a vote, as determined by
+    client-side javascript."""
+
+    poll_id = request.args.get('poll_id')
+    option = request.args.get('option', type=int)
+    previous_option = request.args.get('previous_option', type=int)
+    method = request.args.get('method')
+
+    if poll_id is None or option is None:
+        return redirect('/view')
+
+    poll = Polls.query.join(Options).filter(Polls.id == poll_id).first()
+
+    if method == 'add':
+        poll.options[option].votes = poll.options[option].votes + 1
+
+    elif method == 'change':
+        poll.options[option].votes = poll.options[option].votes + 1
+        poll.options[previous_option].votes = poll.options[previous_option].votes - 1
+
+    else:
+        return (400, 'Bad Request')
+
+    db.session.commit()
+
+    data = [{'text': poll_option.text, 'votes': poll_option.votes} for poll_option in poll.options]
+
+    return json_response(data)

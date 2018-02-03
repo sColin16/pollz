@@ -5,12 +5,14 @@ import sys
 import unittest
 from unittest.mock import MagicMock
 from passlib.hash import sha256_crypt
+from flask import json
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 os.environ['APP_MODE'] = 'test'
 
 from app import app, db, routes  # pylint:disable=unused-import, wrong-import-position
-from app.models import Users, Polls, Responses  # pylint:disable=wrong-import-position
+from app.models import Users, Polls, Options  # pylint:disable=wrong-import-position
+from app.helpers import add_poll  # pylint:disable=wrong-import-position
 
 TEST_EMAIL = 'test@test.com'
 TEST_PASSWORD = 'mypassword'
@@ -31,7 +33,7 @@ def clear_polls():
     of a poll during testing is important (not used yet)."""
 
     db.session.query(Polls).delete()
-    db.session.query(Responses).delete()
+    db.session.query(Options).delete()
     db.session.commit()
 
 
@@ -52,17 +54,19 @@ def manual_create_poll(title=TEST_POLL_TITLE, options=None):
     if options is None:
         options = TEST_POLL_OPTIONS
 
-    new_poll = Polls(title=title)
-    db.session.add(new_poll)
-    db.session.flush()
-
-    option_a_row = Responses(text=options[0], poll_id=new_poll.id)
-    option_b_row = Responses(text=options[1], poll_id=new_poll.id)
-
-    db.session.add_all([option_a_row, option_b_row])
+    return add_poll(title, options)
 
 
-class BasicTests(unittest.TestCase):
+def manual_vote(poll_id, option, change=1):
+    """Manually modifies an option's vote count. Avoids the need
+    to submit unnecessary requests to the server."""
+
+    poll = Polls.query.join(Options).filter(Polls.id == poll_id).first()
+
+    poll.options[option].votes = poll.options[option].votes + change
+
+
+class BasicTests(unittest.TestCase):  # pylint:disable=too-many-public-methods
     """Unittest testcase that handles all basic tests cases
     (which, right now, really means every test)"""
 
@@ -122,8 +126,26 @@ class BasicTests(unittest.TestCase):
 
         return self.client.post(
             '/create',
-            data=dict(title=title, optionA=options[0],
-                      optionB=options[1]),
+            data={'title': title, 'options[]': options},
+            follow_redirects=True
+        )
+
+    def vote_add(self, poll_id, option):
+        """Submits a vote to the server. Uses the app's 'add' method
+        to simply increment an option's vote count"""
+
+        return self.client.get(
+            '/vote?poll_id={}&option={}&method=add'.format(poll_id, option),
+            follow_redirects=True
+        )
+
+    def vote_change(self, poll_id, option, previous_option):
+        """Submits a vote to the server, using the app's 'change' method
+        to swtich the vote submitted by the user."""
+
+        return self.client.get(
+            '/vote?poll_id={}&option={}&previous_option={}&method=change'
+            .format(poll_id, option, previous_option),
             follow_redirects=True
         )
 
@@ -209,6 +231,36 @@ class BasicTests(unittest.TestCase):
         self.assertIn(bytes(TEST_POLL_TITLE, 'utf-8'), response.data)
         self.assertIn(bytes(TEST_POLL_OPTIONS[0], 'utf-8'), response.data)
         self.assertIn(bytes(TEST_POLL_OPTIONS[1], 'utf-8'), response.data)
+
+    def test_vote_add(self):
+        """Ensures that the app's 'add' method for submitting votes
+        functions as expected. Does not test front-end verfication."""
+
+        poll = manual_create_poll()
+
+        response = self.vote_add(poll.id, 0)
+        json_data = json.loads(str(response.data, 'utf-8'))
+        voted_option = json_data[0].get('votes')
+        empty_option = json_data[1].get('votes')
+
+        self.assertEqual(voted_option, 1)
+        self.assertEqual(empty_option, 0)
+
+    def test_vote_change(self):
+        """Ensure that the app's 'change' method for submitting votes
+        function as expected, decrementing the appropraite vote count.
+        Does not test front-end verification."""
+
+        poll = manual_create_poll()
+        manual_vote(poll.id, 0)
+
+        response = self.vote_change(poll.id, 1, 0)
+        json_data = json.loads(str(response.data, 'utf-8'))
+        changed_option = json_data[0].get('votes')
+        voted_option = json_data[1].get('votes')
+
+        self.assertEqual(changed_option, 0)
+        self.assertEqual(voted_option, 1)
 
     def test_login_invalidated(self):
         """Tests that a user who is not logged in cannot gain access
