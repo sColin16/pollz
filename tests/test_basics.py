@@ -80,7 +80,7 @@ class BaseTestClass(unittest.TestCase):
 
     def shortDescription(self):
         """Prevents printing the doc string during testing"""
-        
+
         return None
 
     def register(self, email=TEST_EMAIL, password=TEST_PASSWORD):
