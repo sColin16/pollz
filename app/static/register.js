@@ -8,5 +8,5 @@ function togglePassword(){
 }
 
 checkbox = document.getElementById("show");
-checkbox.onclick = togglePassword;
+checkbox.addEventListener('click', togglePassword);
 
