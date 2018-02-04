@@ -66,39 +66,53 @@ def manual_vote(poll_id, option, change=1):
     poll.options[option].votes = poll.options[option].votes + change
 
 
-class BasicTests(unittest.TestCase):  # pylint:disable=too-many-public-methods
-    """Unittest testcase that handles all basic tests cases
-    (which, right now, really means every test)"""
+class BaseTestClass(unittest.TestCase):
+    """A general purpose testcase that creates an app test instance,
+    and the database. Also runs most basic tests"""
 
     def __init__(self, *args, **kwargs):
         """Instantiates necessary variables, and performs mocks to set
         up variables for the unit tests."""
 
-        super(BasicTests, self).__init__(*args, **kwargs)
+        super(BaseTestClass, self).__init__(*args, **kwargs)
         self.client = app.test_client()
         db.create_all()
 
-        sha256_crypt.encrypt = MagicMock(side_effect=lambda password: password)
-        sha256_crypt.verify = MagicMock(side_effect=lambda password, hash: password == hash)
-
-    def setUp(self):
-        """Function run by the unittest module before every individual test."""
-        pass
-
-    def tearDown(self):
-        """Function run by unittest module after every individual test."""
-
-        self.logout()
+    def shortDescription(self):
+        """Prevents printing the doc string during testing"""
+        
+        return None
 
     def register(self, email=TEST_EMAIL, password=TEST_PASSWORD):
         """Helper function that uses the apps register route to
-        register a new user, and log them in (as is done by default)."""
+        register a new user, and log them in (as is done by default).
+        Needed for both LoginTests and PollTests, since registration
+        is required for creating polls"""
 
-        return self.client.post(
+        response = self.client.post(
             '/register',
             data=dict(email=email, password=password),
             follow_redirects=True
         )
+
+        return response
+
+
+class LoginTests(BaseTestClass):
+    """Test Case that handles tests related to login and registration"""
+
+    def __init__(self, *args, **kwargs):
+        """Sets up additional mocks so that password hashing (which
+        is slow) does not have to be run"""
+
+        super(LoginTests, self).__init__(*args, **kwargs)
+
+        sha256_crypt.encrypt = MagicMock(side_effect=lambda password: password)
+        sha256_crypt.verify = MagicMock(side_effect=lambda password, hash: password == hash)
+
+    def tearDown(self):
+        """Function run by unittest module after every individual test."""
+        self.logout()
 
     def login(self, email=TEST_EMAIL, password=TEST_PASSWORD):
         """Helper function that uses the app's login route to test login functionality."""
@@ -114,38 +128,6 @@ class BasicTests(unittest.TestCase):  # pylint:disable=too-many-public-methods
 
         return self.client.get(
             '/logout',
-            follow_redirects=True
-        )
-
-    def create_poll(self, title=TEST_POLL_TITLE, options=None):
-        """Helper function that submits data to test the app's
-        create poll route."""
-
-        if options is None:
-            options = TEST_POLL_OPTIONS
-
-        return self.client.post(
-            '/create',
-            data={'title': title, 'options[]': options},
-            follow_redirects=True
-        )
-
-    def vote_add(self, poll_id, option):
-        """Submits a vote to the server. Uses the app's 'add' method
-        to simply increment an option's vote count"""
-
-        return self.client.get(
-            '/vote?poll_id={}&option={}&method=add'.format(poll_id, option),
-            follow_redirects=True
-        )
-
-    def vote_change(self, poll_id, option, previous_option):
-        """Submits a vote to the server, using the app's 'change' method
-        to swtich the vote submitted by the user."""
-
-        return self.client.get(
-            '/vote?poll_id={}&option={}&previous_option={}&method=change'
-            .format(poll_id, option, previous_option),
             follow_redirects=True
         )
 
@@ -213,10 +195,62 @@ class BasicTests(unittest.TestCase):  # pylint:disable=too-many-public-methods
         response = self.logout()
         self.assertEqual(response.status_code, 200)
 
+    def test_login_invalidated(self):
+        """Tests that a user who is not logged in cannot gain access
+        to the dashboard route, or other routes that require login."""
+
+        response = self.client.get('/dashboard')
+        self.assertEqual(response.status_code, 302)
+
+    def test_login_forbidden(self):
+        """Tests that a user who is logged in cannot access routes such
+        as login or register, that forbid a logged in user."""
+
+        self.register()
+        response = self.client.get('/register')
+        self.assertEqual(response.status_code, 302)
+
+
+class PollTests(BaseTestClass):
+    """Test Case that handles tests related to poll creation and voting"""
+
+    def create_poll(self, title=TEST_POLL_TITLE, options=None):
+        """Helper function that submits data to test the app's
+        create poll route."""
+
+        if options is None:
+            options = TEST_POLL_OPTIONS
+
+        return self.client.post(
+            '/create',
+            data={'title': title, 'options[]': options},
+            follow_redirects=True
+        )
+
+    def vote_add(self, poll_id, option):
+        """Submits a vote to the server. Uses the app's 'add' method
+        to simply increment an option's vote count"""
+
+        return self.client.get(
+            '/vote?poll_id={}&option={}&method=add'.format(poll_id, option),
+            follow_redirects=True
+        )
+
+    def vote_change(self, poll_id, option, previous_option):
+        """Submits a vote to the server, using the app's 'change' method
+        to swtich the vote submitted by the user."""
+
+        return self.client.get(
+            '/vote?poll_id={}&option={}&previous_option={}&method=change'
+            .format(poll_id, option, previous_option),
+            follow_redirects=True
+        )
+
     def test_create_poll(self):
         """Ensures that a user who submits the form via the create route
         will allow them to create a poll as expected."""
 
+        clear_users()
         self.register()
         response = self.create_poll()
         self.assertIn(b"Poll created", response.data)
@@ -262,21 +296,6 @@ class BasicTests(unittest.TestCase):  # pylint:disable=too-many-public-methods
         self.assertEqual(changed_option, 0)
         self.assertEqual(voted_option, 1)
 
-    def test_login_invalidated(self):
-        """Tests that a user who is not logged in cannot gain access
-        to the dashboard route, or other routes that require login."""
-
-        response = self.client.get('/dashboard')
-        self.assertEqual(response.status_code, 302)
-
-    def test_login_forbidden(self):
-        """Tests that a user who is logged in cannot access routes such
-        as login or register, that forbid a logged in user."""
-
-        self.register()
-        response = self.client.get('/register')
-        self.assertEqual(response.status_code, 302)
-
 
 if __name__ == "__main__":
-    unittest.main()
+    unittest.main(verbosity=2)
