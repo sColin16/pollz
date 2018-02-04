@@ -129,9 +129,9 @@ def create():
 @app.route('/vote')
 def vote():
     """Route that is used to submit votes to the database.
-    GET is used to submit requests, to either add a vote
-    to the database, or switch a vote, as determined by
-    client-side javascript."""
+    GET is used to submit requests, to add a vote
+    to the database, switch a vote, or remove a vote, as
+    determined by client-side javascript."""
 
     poll_id = request.args.get('poll_id')
     option = request.args.get('option', type=int)
