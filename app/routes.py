@@ -150,6 +150,9 @@ def vote():
         poll.options[option].votes = poll.options[option].votes + 1
         poll.options[previous_option].votes = poll.options[previous_option].votes - 1
 
+    elif method == 'remove':
+        poll.options[option].votes = poll.options[option].votes - 1
+
     else:
         return (400, 'Bad Request')
 

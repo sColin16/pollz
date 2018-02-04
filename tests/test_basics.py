@@ -153,8 +153,7 @@ class LoginTests(BaseTestClass):
         clear_users()
         manual_register()
         response = self.register()
-        self.assertIn(b'That email has already been used to register',
-                      response.data)
+        self.assertIn(b'That email has already been used to register', response.data)
 
     def test_valid_login(self):
         """Tests that a registered user with a valid email and password
@@ -227,22 +226,12 @@ class PollTests(BaseTestClass):
             follow_redirects=True
         )
 
-    def vote_add(self, poll_id, option):
-        """Submits a vote to the server. Uses the app's 'add' method
-        to simply increment an option's vote count"""
+    def vote(self, poll_id, option, previous_option, method):
+        """Submits a vote to the server using the specified method"""
 
         return self.client.get(
-            '/vote?poll_id={}&option={}&method=add'.format(poll_id, option),
-            follow_redirects=True
-        )
-
-    def vote_change(self, poll_id, option, previous_option):
-        """Submits a vote to the server, using the app's 'change' method
-        to swtich the vote submitted by the user."""
-
-        return self.client.get(
-            '/vote?poll_id={}&option={}&previous_option={}&method=change'
-            .format(poll_id, option, previous_option),
+            'vote?poll_id={}&option={}&previous_option={}&method={}'
+            .format(poll_id, option, previous_option, method),
             follow_redirects=True
         )
 
@@ -272,7 +261,7 @@ class PollTests(BaseTestClass):
 
         poll = manual_create_poll()
 
-        response = self.vote_add(poll.id, 0)
+        response = self.vote(poll.id, 0, None, 'add')
         json_data = json.loads(str(response.data, 'utf-8'))
         voted_option = json_data[0].get('votes')
         empty_option = json_data[1].get('votes')
@@ -288,13 +277,29 @@ class PollTests(BaseTestClass):
         poll = manual_create_poll()
         manual_vote(poll.id, 0)
 
-        response = self.vote_change(poll.id, 1, 0)
+        response = self.vote(poll.id, 1, 0, 'change')
         json_data = json.loads(str(response.data, 'utf-8'))
         changed_option = json_data[0].get('votes')
         voted_option = json_data[1].get('votes')
 
         self.assertEqual(changed_option, 0)
         self.assertEqual(voted_option, 1)
+
+    def test_vote_remove(self):
+        """Ensures that the app's 'remove method for cancelling a vote
+        functions as expected, decremineting the specified option's vote
+        count. Does not test front-end verification."""
+
+        poll = manual_create_poll()
+        manual_vote(poll.id, 0)
+
+        response = self.vote(poll.id, 0, None, 'remove')
+        json_data = json.loads(str(response.data, 'utf-8'))
+        removed_option = json_data[0].get('votes')
+        empty_option = json_data[1].get('votes')
+
+        self.assertEqual(removed_option, 0)
+        self.assertEqual(empty_option, 0)
 
 
 if __name__ == "__main__":
