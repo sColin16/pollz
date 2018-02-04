@@ -11,7 +11,8 @@
 {% endwith %}
 
 <form action = '/create' method = 'POST' id = create-form>
-    <input requried type = 'text' name = 'title' placeholder = 'Poll Title'><br>
+    <input required type = 'text' name = 'title' placeholder = 'Poll Title'><br>
+    <div style ='display: none' class = option-field><input type = 'text' name = 'none' placeholder = 'Option'><br></div>
     <div class = option-field><input required type = 'text' name = 'options[]' placeholder = 'Option'><br></div>
     <div class = option-field><input required type = 'text' name = 'options[]' placeholder = 'Option'><br></div>
     <button type = button id = add-option>Add option</button>
