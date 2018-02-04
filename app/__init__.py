@@ -9,7 +9,7 @@ from flask_migrate import Migrate
 from config import CONFIG_OPTIONS
 
 APP_MODE = os.environ.get('APP_MODE', 'dev')
-print(APP_MODE)
+print('App running in {} mode'.format(APP_MODE))
 
 app = Flask(__name__)  # pylint:disable=invalid-name
 app.config.from_object(CONFIG_OPTIONS.get(APP_MODE))
