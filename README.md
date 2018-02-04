@@ -1,7 +1,7 @@
 
 # Pollz
 
-![Build Passing](https://travis-ci.org/sColin16/pollz.svg?branch=master)
+![Build Status](https://travis-ci.org/sColin16/pollz.svg?branch=master)
 [![codecov](https://codecov.io/gh/sColin16/pollz/branch/master/graph/badge.svg)](https://codecov.io/gh/sColin16/pollz)
 
 Pollz is an open source survey and polling web application, built using Flask. The goal is to host fun and simple polls that are effortless to create.
@@ -24,13 +24,11 @@ cd pollz
 ```
 
 **Configure git to sync local fork with original repository**
-1. Navigate to the [original repository](https://github.com/sColin16/pollz)
-2. Click the "Clone or Download" button, and copy the link, as before
-3. In the same terminal, within your local fork of the repository, type `git remote add upstream` followed by the link you just copied:
+1. In the same terminal, within your local fork of the repository, type `git remote add upstream` followed by the link of the original repository (not your fork):
 ```
 git remote add upstream https://github.com/sColin16/pollz.git
 ```
-4. Verify both remotes now exist:
+2. Verify both remotes now exist:
 ```
 git remote -v
 ```
@@ -42,13 +40,13 @@ and make sure you see labels that say both `origin` and `upstream`
 
 ### Prerequisites
 
-For the dev configuration, sqlite is used. If not already installed install it with
+For the dev configuration, postgresql and sqlite (only for testing) are used. If not already installed, install both with
 ```
-sudo apt-get install sqlite3
+sudo apt-get install sqlite postgresql
 ```
 or a similar command
 
-If you plan to use the dev instance within a virtualenv (which is recomended):
+If you plan to use the dev instance within a virtualenv (which is highly recomended):
 ```
 pip3 install virtualenv
 ```
@@ -65,18 +63,23 @@ source venv/bin/activate
 make init
 ```
 
-3. Run the dev server:
+3. Set the FLASK_APP variable
 ```
-make run
+export FLASK_APP=pollz.py
 ```
 
-4. Head to [localhost:5000](localhost:5000) in your browser to ineract with the dev server.
+4. Run the dev server:
+```
+flask run
+```
+
+5. Head to localhost:5000 in your browser to interact with the dev server.
 
 **If everything seems to have worked, you're ready to develop** :tada:
 
 ## Contributing
 Coming Soon...
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for the process of making changes, and submitting pull requests.
 
 ## Running the tests
 
@@ -104,7 +107,7 @@ In addition to running basic linting, this command will use `pylint` to perform 
 This linting is not required to pass the Travis CI check (since it can discourage development - especially in early stages). However, it is recomended that some effort is put into minimizing the errors from this lint.
 
 ## Deployment
-The production version of pollz is run on the Heroku Cloud. You can deploy your copy to Heroku like any other app (using postgres), with a few basic modifications.
+The production version of pollz is run on the Heroku Cloud. You can deploy your copy to Heroku like any other app (as long as Postresql is included as an add on), with a few basic modifications.
 
 run `make get-key` to get a randomly generated secret key for production
 
@@ -114,6 +117,7 @@ Add the following variables for the app to function:
 
 ```
 APP_MODE prod
+FLASK_APP pollz.py
 SECRET_KEY <result of 'make get-key'>
 ```
 
