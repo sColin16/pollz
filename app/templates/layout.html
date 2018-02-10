@@ -13,21 +13,21 @@
         
         <title>Pollz</title>
         
+        <link href="https://fonts.googleapis.com/css?family=Barlow+Condensed|Oswald|Rammetto+One" rel="stylesheet">
         <link rel = 'stylesheet' type = 'text/css' href = 'static/main.css' >
-        <!-- Link CSS here -->
     </head>
     <body>
         <header>
-            <h1>Pollz</h1>
-            <ul>
+            <ul class = header-content>
+                <li><a href = '/' class = logo><h1>Pollz</h1></a></li>
                 <li><a href = 'view'>View Polls</a></li>
                 <li><a href = '/create'>Create a Poll</a></li>
                 
                 {% if user %}
-                <li><a href = '/logout'>Log Out</a></li>
+                <li class = right><a href = '/logout'>Log Out</a></li>
                 {% else %}
-                <li><a href = '/login'>Log In</a></li>
-                <li><a href = '/register'>Register Now</a></li>
+                <li class = right><a href = '/register' id = register>Register</a></li>
+                <li class = right><a href = '/login'>Log In</a></li>
                 {% endif %}
             </ul>
         </header>

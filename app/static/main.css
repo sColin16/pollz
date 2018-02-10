@@ -6,6 +6,49 @@ html {
 
 body {
     margin: 0;
+    font-family: 'Oswald', sans-serif;
+}
+
+.header-content {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    background-color: #f8333c;
+    overflow: hidden;
+}
+
+.header-content li {
+    float: left;
+}
+
+.header-content a {
+    display: block;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    padding:4px;
+}
+
+.header-content a:not(.logo) {
+    padding: 18px 24px;
+    font-size: 18px;
+}
+
+.header-content a:not(.logo):hover, #register:hover{
+    background-color: #E22F37;
+}
+
+.logo h1 {
+    margin:0 10px 0 0;
+    font-family: 'Rammetto One', cursive;
+}
+
+.right {
+    float: right !important;
+}
+
+#register {
+    background-color: #CB2A32;
 }
 
 footer {
