@@ -76,19 +76,19 @@ h1, h2 {
 }
 
 @media screen and (min-width: 320px) {
-    #form-box {
+    #form-box, .submit-vote {
         width: 85%;
     }
 }
 
 @media screen and (min-width: 480px) {
-    #form-box {
+    #form-box, .submit-vote {
         width: 60%;
     }
 }
 
 @media screen and (min-width: 769px) {
-    #form-box {
+    #form-box, .submit-vote {
         width: 35%;
     }
 }
@@ -108,7 +108,7 @@ h1, h2 {
 }
 
 input:focus {
-    border: 1px solid grey;
+    border: 1px solid grey !important;
     transition: 0.4s;
 }
 
@@ -198,6 +198,22 @@ input:focus {
     position: absolute;
 }
 
+.submit-vote {
+    background-color: #04E762;
+}
+
+.submit-vote:hover{
+    background-color: #04D25A;
+}
+
+.poll {
+    text-align: center;
+}
+
+.vote-number {
+    margin-left: 10px;
+}
+
 footer {
     background-color: #110F11;
     color: #E5F4E3;
@@ -208,4 +224,14 @@ footer {
     height:30px;
     margin: 100px 0 0 0;
     padding: 5px 0 0 0;
+}
+
+#test {
+    position: absolute;
+    margin: -41px -10px;
+}
+
+#test-div {
+    width: 100%;
+    text-align: right;
 }
